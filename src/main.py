@@ -53,15 +53,40 @@ class SPBDataProcessor:
         
     def load_datasets(self):
         try:
-            self.contacts_df = pd.read_excel(os.path.join(self.data_dir, "contacts.xlsx"))
-            self.questions_df = pd.read_excel(os.path.join(self.data_dir, "questions.xlsx"))
+            # Load contacts DataFrame
+            contacts_path = os.path.join(self.data_dir, "contacts.xlsx")
+            self.contacts_df = pd.read_excel(contacts_path)
             
+            # Create a synthetic 'description' column
+            self.contacts_df['description'] = self.contacts_df.apply(
+                lambda row: f"{row['name']} - {row['category']} - Телефон: {row['phones']}", 
+                axis=1
+            )
+            
+            # Load questions DataFrame
+            questions_path = os.path.join(self.data_dir, "questions.xlsx")
+            self.questions_df = pd.read_excel(questions_path)
+            
+            # Rename the first column to 'question' and use it
+            self.questions_df.columns = [
+                'question' if i == 0 else f'category_{i}' 
+                for i in range(len(self.questions_df.columns))
+            ]
+            
+            # Fill NaN values
             self.contacts_df['description'] = self.contacts_df['description'].fillna('')
             self.questions_df['question'] = self.questions_df['question'].fillna('')
             
+            logger.info(f"Contacts DataFrame columns: {list(self.contacts_df.columns)}")
+            logger.info(f"Questions DataFrame columns: {list(self.questions_df.columns)}")
             logger.info("Datasets loaded and preprocessed successfully")
+        
+        except FileNotFoundError as e:
+            logger.error(f"Dataset file not found: {e}")
+            raise
         except Exception as e:
             logger.error(f"Error loading datasets: {e}")
+            raise
 
 class MultiModalRetriever:
     def __init__(self, data_processor: SPBDataProcessor):
@@ -182,11 +207,13 @@ async def health_check():
     return {"status": "healthy"}
 
 def main():
+    logging.basicConfig(level=logging.DEBUG)
     uvicorn.run(
         "main:app", 
         host="0.0.0.0", 
         port=8000, 
-        reload=True
+        reload=False,
+        log_level="debug"
     )
 
 if __name__ == "__main__":

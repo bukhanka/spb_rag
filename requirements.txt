@@ -1,18 +1,32 @@
-langchain==0.1.16
-openai==1.14.3
-python-dotenv==1.0.1
-pandas==2.2.1
-openpyxl==3.1.2
-requests==2.31.0
-tiktoken==0.6.0
-chromadb==0.4.24
-sentence-transformers==2.6.1
-rank-bm25==0.2.0
-scikit-learn==1.3.2
-fastapi==0.109.0
-uvicorn==0.27.1
-pydantic==2.6.4
-python-multipart==0.0.9
-httpx==0.27.0
-pytest==8.0.2
-allure-pytest==2.13.5 
+# Core dependencies
+fastapi
+uvicorn
+pydantic
+python-multipart
+httpx
+
+# Data processing
+numpy
+pandas
+openpyxl
+scikit-learn
+
+# AI and ML
+langchain
+openai
+rank-bm25
+sentence-transformers
+chromadb
+tiktoken
+
+# Utilities
+python-dotenv
+requests
+
+# Testing (optional)
+pytest
+allure-pytest
+
+# Test dependencies
+pytest
+httpx
